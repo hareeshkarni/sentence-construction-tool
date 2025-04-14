@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { Alert } from "@/components/ui/alert";
 
 const Timer = ({
   duration = 30,

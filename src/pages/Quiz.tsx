@@ -6,6 +6,9 @@ import ProgressBar from "@/components/ProgressBar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
+// ✅ Import local questions JSON
+import localData from "@/data/questions.json";
+
 interface Question {
   questionId: string;
   question: string;
@@ -24,18 +27,10 @@ const Quiz = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await fetch("http://localhost:3000/questions");
-        const json = await res.json();
-        setQuestions(json);
-        setUserAnswers(new Array(json.length).fill([]));
-        setLoading(false);
-      } catch (error) {
-        console.error("Failed to fetch questions", error);
-      }
-    };
-    fetchData();
+    // ✅ Load from local import instead of API
+    setQuestions(localData.questions);
+    setUserAnswers(new Array(localData.questions.length).fill([]));
+    setLoading(false);
   }, []);
 
   const handleFilled = (answer: string[]) => {
@@ -93,32 +88,33 @@ const Quiz = () => {
   const currentQuestion = questions[currentIndex];
 
   return (
-  <div className="min-h-screen flex justify-center items-center px-4 bg-gradient-to-br from-blue-50 via-purple-100 to-indigo-100">
-    <Card className="w-full max-w-4xl bg-white shadow-lg rounded-xl border border-gray-200">
-      <CardHeader className="pb-4 border-b">
-        <div className="flex justify-between items-center">
-          <ProgressBar current={currentIndex} total={questions.length} />
-          <Timer onTimeUp={handleTimeUp} keyTrigger={currentIndex} />
-        </div>
-      </CardHeader>
-      <CardContent className="space-y-6 pt-4">
-        <SentenceQuestion
-          question={currentQuestion.question}
-          options={currentQuestion.options}
-          onFilled={handleFilled}
-        />
-        <div className="text-center">
-          <Button
-            onClick={handleNext}
-            disabled={!canProceed}
-            className="px-6 py-3 text-lg w-full sm:w-auto"
-          >
-            {currentIndex === questions.length - 1 ? "Finish" : "Next"}
-          </Button>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
+    <div className="min-h-screen bg-gradient-to-br from-blue-100 to-purple-100 py-10 px-4 flex justify-center">
+      <Card className="w-full max-w-4xl bg-white shadow-lg rounded-xl border border-gray-200">
+        <CardHeader className="pb-4 border-b">
+          <div className="flex justify-between items-center">
+            <ProgressBar current={currentIndex} total={questions.length} />
+            <Timer onTimeUp={handleTimeUp} keyTrigger={currentIndex} />
+          </div>
+        </CardHeader>
+
+        <CardContent className="space-y-6 pt-6">
+          <SentenceQuestion
+            question={currentQuestion.question}
+            options={currentQuestion.options}
+            onFilled={handleFilled}
+          />
+          <div className="text-center">
+            <Button
+              onClick={handleNext}
+              disabled={!canProceed}
+              className="px-6 py-3 text-lg w-full sm:w-auto"
+            >
+              {currentIndex === questions.length - 1 ? "Finish" : "Next"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
   );
 };
 
